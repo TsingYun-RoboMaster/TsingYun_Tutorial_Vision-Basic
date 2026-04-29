@@ -1,0 +1,5 @@
+FROM ros:humble-ros-base
+
+# TODO
+
+WORKDIR /workspaces/code

@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  basic-dev:
+    image: basic:dev
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    volumes:
+      - ../basic_ws:/workspaces/code
+    working_dir: /workspaces/code
+    container_name: basic-dev
+    command: /bin/bash
+    network_mode: host
+    stdin_open: true
