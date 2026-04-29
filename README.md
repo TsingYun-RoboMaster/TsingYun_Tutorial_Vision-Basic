@@ -1,4 +1,4 @@
-# TsingYun_Tutorial_Template
+# TsingYun_Tutorial_Vision-Basic
 
 青云战队视觉组培训基础部分
 
@@ -13,7 +13,7 @@
 
 请参考[作业说明文档](docs/assignment.md)
 
-## 作业要求
+## 注意事项
 
 1. Pull Request 标题请改为 `姓名 - 学号`，需要在 description 中提交以下信息：
    - 代码功能展示
