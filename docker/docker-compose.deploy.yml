@@ -1,1 +1,26 @@
-# TODO
+services:
+  publisher:
+    image: basic:deploy
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic-publisher
+    command: bash -c "source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 run basic_topic publisher_component_node"
+    network_mode: host
+    ipc: host
+    environment:
+      - ROS_DOMAIN_ID=0
+
+  subscriber:
+    image: basic:deploy
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic-subscriber
+    command: bash -c "source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 run basic_topic subscriber_component_node"
+    network_mode: host
+    ipc: host
+    environment:
+      - ROS_DOMAIN_ID=0
+    depends_on:
+      - publisher

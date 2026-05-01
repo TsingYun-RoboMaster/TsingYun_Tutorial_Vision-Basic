@@ -9,22 +9,27 @@
 #include <cmath>
 #include <memory>
 #include <string>
-
+#include <functional>
 namespace basic_topic
 {
 
-class PublisherComponent : public rclcpp::Node
-{
-public:
-    explicit PublisherComponent(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
+    class PublisherComponent : public rclcpp::Node
+    {
+    public:
+        explicit PublisherComponent(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
 
-private:
-    static constexpr double kPi = 3.14159265358979323846;
-    double normalize_angle(double angle);
-    geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
+    private:
+        static constexpr double kPi = 3.14159265358979323846;
+        double normalize_angle(double angle);                                                     // 角度归一
+        geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);  // 角度转四元数
 
-    // TODO
-};
+        // TODO
+        rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr publisher_;  // 发布
+        rclcpp::TimerBase::SharedPtr timer_;                                      // 定时器
+        double time_sec_{0.0};
+
+        void publish_quaternion();  // 回调函数
+    };
 
 }  // namespace basic_topic
 
