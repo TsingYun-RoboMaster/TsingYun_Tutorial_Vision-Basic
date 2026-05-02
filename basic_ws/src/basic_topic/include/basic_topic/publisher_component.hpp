@@ -13,18 +13,18 @@
 namespace basic_topic
 {
 
-class PublisherComponent : public rclcpp::Node
-{
-public:
-    explicit PublisherComponent(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
+    class PublisherComponent : public rclcpp::Node
+    {
+    public:
+        explicit PublisherComponent(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
 
-private:
-    static constexpr double kPi = 3.14159265358979323846;
-    double normalize_angle(double angle);
-    geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
+    private:
+        static constexpr double kPi = 3.14159265358979323846;
+        double normalize_angle(double angle);
+        geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
 
-    // TODO
-};
+        // TODO
+    };
 
 }  // namespace basic_topic
 
