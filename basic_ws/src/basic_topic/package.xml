@@ -8,14 +8,21 @@
   <maintainer email="tsingyun@mail.com">TsingYun</maintainer>
   <license>MIT</license>
 
+  <!-- ament_cmake 声明本包使用 ROS2 的 CMake 构建系统。 -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- TODO -->
+  <!-- geometry_msgs 提供 Quaternion 消息类型。 -->
+  <depend>geometry_msgs</depend>
+  <!-- rclcpp 提供 ROS2 C++ 节点、发布器、订阅器和日志 API。 -->
+  <depend>rclcpp</depend>
+  <!-- rclcpp_components 对应源码里的组件注册宏。 -->
+  <depend>rclcpp_components</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
   <export>
+    <!-- 告诉 ROS2 工具链这个包由 ament_cmake 构建。 -->
     <build_type>ament_cmake</build_type>
   </export>
 </package>

@@ -1,5 +1,18 @@
 FROM ros:humble-ros-base
 
-# TODO
+# Dev 镜像只提供开发工具链，源码由 docker-compose.dev.yml 挂载进来。
+# build-essential 提供 g++/make 等 C++ 编译工具。
+# python3-colcon-common-extensions 提供 ROS2 标准构建命令 colcon。
+# ros-humble-geometry-msgs 提供 Quaternion 消息定义。
+# 最后一行清理 apt 缓存，用来减小镜像体积。
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    python3-colcon-common-extensions \
+    ros-humble-geometry-msgs \
+    && rm -rf /var/lib/apt/lists/*
 
+# compose 会把 basic_ws 挂载到这里，进入容器后默认就在工作空间根目录。
 WORKDIR /workspaces/code
+
+# 默认进入 bash，便于手动执行 colcon build 和 ros2 launch。
+CMD ["/bin/bash"]

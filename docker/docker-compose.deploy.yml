@@ -1,1 +1,57 @@
-# TODO
+services:
+  # 发布端容器：只运行 publisher_component，负责产生 Quaternion 消息。
+  basic-publisher:
+    # 给发布端单独的镜像 tag，避免 compose 并发构建时两个服务抢同一个 tag。
+    image: basic-publisher:deploy
+    # 如果本地还没有 basic:deploy，compose 会按 Dockerfile.deploy 构建。
+    build:
+      # context 指向仓库根目录，这样 Dockerfile 里的 COPY basic_ws/ 才能找到源码。
+      context: ..
+      # Dockerfile.deploy 位于 docker/ 子目录。
+      dockerfile: docker/Dockerfile.deploy
+    # 固定容器名，方便用 docker logs basic-publisher 查看输出。
+    container_name: basic-publisher
+    # 使用同一个 Docker bridge 网络，让两个容器能通过容器网络互相发现。
+    networks:
+      - basic-ros
+    environment:
+      # 两个容器必须使用同一个 ROS_DOMAIN_ID，才能处于同一个 ROS2 通信域。
+      ROS_DOMAIN_ID: "0"
+      # 明确允许跨容器通信，避免 ROS 只监听容器本地 localhost。
+      ROS_LOCALHOST_ONLY: "0"
+    # 启动前 source ROS 和工作空间环境，再运行发布端可执行文件。
+    command: >
+      /bin/bash -lc "source /opt/ros/humble/setup.bash &&
+      source /workspaces/code/install/setup.bash &&
+      ros2 run basic_topic publisher_component"
+
+  # 订阅端容器：只运行 subscriber_component，负责接收并打印 Quaternion/RPY。
+  basic-subscriber:
+    # 订阅端使用同一个 Dockerfile 构建，但镜像 tag 和发布端分开，避免构建冲突。
+    image: basic-subscriber:deploy
+    # build 配置保持一致，第一次 up --build 时会构建同一个镜像。
+    build:
+      # context 同样指向仓库根目录。
+      context: ..
+      # 复用 deploy Dockerfile。
+      dockerfile: docker/Dockerfile.deploy
+    # 固定容器名，方便用 docker logs basic-subscriber 查看输出。
+    container_name: basic-subscriber
+    # 与发布端加入同一个 Docker bridge 网络。
+    networks:
+      - basic-ros
+    environment:
+      # 必须和 basic-publisher 的 ROS_DOMAIN_ID 一致。
+      ROS_DOMAIN_ID: "0"
+      # 明确允许跨容器通信，避免 ROS 只监听容器本地 localhost。
+      ROS_LOCALHOST_ONLY: "0"
+    # 启动前 source ROS 和工作空间环境，再运行订阅端可执行文件。
+    command: >
+      /bin/bash -lc "source /opt/ros/humble/setup.bash &&
+      source /workspaces/code/install/setup.bash &&
+      ros2 run basic_topic subscriber_component"
+
+networks:
+  # 自定义 bridge 网络会把两个服务放进同一个二层网络，便于 DDS discovery。
+  basic-ros:
+    driver: bridge

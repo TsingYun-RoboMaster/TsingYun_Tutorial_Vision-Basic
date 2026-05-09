@@ -1,3 +1,23 @@
 FROM ros:humble-ros-base
 
-# TODO
+# Deploy 镜像在构建阶段完成编译，运行容器时只负责启动指定节点。
+# build-essential 提供编译 C++ 节点需要的工具链。
+# python3-colcon-common-extensions 用来在镜像构建阶段执行 colcon build。
+# ros-humble-geometry-msgs 提供 Quaternion 消息类型。
+# 最后一行清理 apt 缓存，用来减小 deploy 镜像体积。
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    python3-colcon-common-extensions \
+    ros-humble-geometry-msgs \
+    && rm -rf /var/lib/apt/lists/*
+
+# 工作目录就是 ROS2 workspace 根目录，里面会有 src/install/log 等目录。
+WORKDIR /workspaces/code
+# 复制 basic_ws 的内容到镜像中，这样 deploy 容器不依赖本地 volume。
+COPY basic_ws/ /workspaces/code/
+
+# 先 source ROS 环境，再编译工作空间，生成 install/setup.bash。
+RUN . /opt/ros/humble/setup.sh && colcon build --symlink-install
+
+# compose 会覆盖 CMD 启动 publisher 或 subscriber；这里保留 bash 方便调试。
+CMD ["/bin/bash"]
