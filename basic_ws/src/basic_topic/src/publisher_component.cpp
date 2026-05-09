@@ -9,6 +9,9 @@ namespace basic_topic
         Node("publisher_node", options)
     {
         // TODO
+        pub_ = this->create_publisher<geometry_msgs::msg::Quaternion>("quaternion_topic", 10);
+        timer_ = this->create_wall_timer(500ms, std::bind(&PublisherComponent::timer_callback, this));
+
     }
 
     double PublisherComponent::normalize_angle(double angle)
@@ -37,6 +40,24 @@ namespace basic_topic
     }
 
     // TODO
+    double PublisherComponent::randomDouble(double min, double max)
+    {
+        static std::default_random_engine generator;
+        std::uniform_real_distribution<double> distribution(min, max);
+        return distribution(generator);
+    }
+    
+    void PublisherComponent::timer_callback()
+    {
+        auto message = geometry_msgs::msg::Quaternion();
+        double roll  = randomDouble(-kPi, kPi);
+        double pitch = randomDouble(-kPi, kPi);
+        double yaw   = randomDouble(-kPi, kPi);
+        message = rpy_to_quaternion(roll, pitch, yaw);
+        RCLCPP_INFO(this->get_logger(), "Publishing: [w: %.3f, x: %.3f, y: %.3f, z: %.3f] from [%.3f, %.3f, %.3f]", 
+                message.w, message.x, message.y, message.z, roll, pitch, yaw);
+        pub_->publish(message);
+    }
 
 }  // namespace basic_topic
 

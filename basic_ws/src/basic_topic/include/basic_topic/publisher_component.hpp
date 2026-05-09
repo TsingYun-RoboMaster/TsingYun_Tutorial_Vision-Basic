@@ -9,6 +9,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <random>
 
 namespace basic_topic
 {
@@ -24,6 +25,10 @@ namespace basic_topic
         geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
 
         // TODO
+        rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr pub_;
+        rclcpp::TimerBase::SharedPtr timer_;
+        void timer_callback();
+        double randomDouble(double min, double max);
     };
 
 }  // namespace basic_topic

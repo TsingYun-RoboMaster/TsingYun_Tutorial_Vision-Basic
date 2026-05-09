@@ -1,1 +1,38 @@
-# TODO
+version: "3.8"
+
+services:
+  publisher-node:
+    image: basic:deploy
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: deploy-pub-container
+    network_mode: host
+    ipc: host
+    command: >
+      bash -c "source /opt/ros/humble/setup.bash && 
+               source /workspaces/code/install/setup.bash && 
+               ros2 run basic_topic publisher_component"
+    environment:
+      - ROS_DOMAIN_ID=0
+      - ROS_LOCALHOST_ONLY=0
+    restart: always
+
+  subscriber-node:
+    image: basic:deploy
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: deploy-sub-container
+    network_mode: host
+    ipc: host
+    command: >
+      bash -c "source /opt/ros/humble/setup.bash && 
+               source /workspaces/code/install/setup.bash && 
+               ros2 run basic_topic subscriber_component"
+    environment:
+      - ROS_DOMAIN_ID=0
+      - ROS_LOCALHOST_ONLY=0
+      - RCUTILS_LOGGING_BUFFERED_STREAM=0
+      - RCUTILS_LOGGING_USE_STDOUT=1
+    restart: always

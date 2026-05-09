@@ -1,3 +1,19 @@
 FROM ros:humble-ros-base
 
 # TODO
+
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspaces/code
+
+COPY ./basic_ws/src ./src
+
+RUN . /opt/ros/humble/setup.sh && colcon build
+
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc && \
+    echo "source /workspaces/code/install/setup.bash" >> ~/.bashrc
+
+CMD ["bash", "-c", "source /workspaces/code/install/setup.bash && ros2 launch basic_topic basic_topic.launch.py"]

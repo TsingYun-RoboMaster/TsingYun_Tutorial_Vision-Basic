@@ -1,5 +1,11 @@
 FROM ros:humble-ros-base
 
 # TODO
+FROM osrf/ros:humble-desktop
+
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspaces/code
