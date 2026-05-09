@@ -9,6 +9,12 @@ namespace basic_topic
         Node("publisher_node", options)
     {
         // TODO
+        publisher_ = this->create_publisher<geometry_msgs::msg::Quaternion>(
+            "/quaternion_topic", 10);
+        timer_ = this->create_wall_timer(
+            std::chrono::milliseconds(500),
+            std::bind(&PublisherComponent::timer_callback, this));
+        RCLCPP_INFO(this->get_logger(), "发布节点(%s)已启动", this->get_name());
     }
 
     double PublisherComponent::normalize_angle(double angle)
@@ -37,6 +43,25 @@ namespace basic_topic
     }
 
     // TODO
+    void PublisherComponent::timer_callback()
+    {
+        // 随机生成欧拉角（范围 -π ~ π）
+        double roll = (static_cast<double>(std::rand()) / RAND_MAX) * 2.0 * kPi - kPi;
+        double pitch = (static_cast<double>(std::rand()) / RAND_MAX) * 2.0 * kPi - kPi;
+        double yaw = (static_cast<double>(std::rand()) / RAND_MAX) * 2.0 * kPi - kPi;
+
+        // 欧拉角转四元数
+        geometry_msgs::msg::Quaternion msg = rpy_to_quaternion(roll, pitch, yaw);
+
+        // 发布消息
+        publisher_->publish(msg);
+
+        // 打印日志
+        RCLCPP_INFO(this->get_logger(),
+            "发布四元数: [%.2f, %.2f, %.2f, %.2f] | R: %.2f P: %.2f Y: %.2f",
+            msg.x, msg.y, msg.z, msg.w,
+            normalize_angle(roll), normalize_angle(pitch), normalize_angle(yaw));
+    }
 
 }  // namespace basic_topic
 

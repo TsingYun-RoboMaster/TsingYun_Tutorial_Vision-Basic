@@ -1,1 +1,23 @@
 # TODO
+services:
+  publisher:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: deploy_publisher
+    environment:
+      - ROS_DOMAIN_ID=42
+    command: >
+      bash -c "source /workspaces/code/basic_ws/install/setup.bash && ros2 run basic_topic publisher_component"
+
+  subscriber:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: deploy_subscriber
+    environment:
+      - ROS_DOMAIN_ID=42
+    command: >
+      bash -c "source /workspaces/code/basic_ws/install/setup.bash && ros2 run basic_topic subscriber_component"
+    depends_on:
+      - publisher

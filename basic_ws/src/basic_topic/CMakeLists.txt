@@ -9,12 +9,23 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 # TODO
+find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(rclcpp_components REQUIRED)
+
+include_directories(include)
+
+add_executable(publisher_component src/publisher_node.cpp src/publisher_component.cpp)
+ament_target_dependencies(publisher_component rclcpp geometry_msgs rclcpp_components)
+
+add_executable(subscriber_component src/subscriber_node.cpp src/subscriber_component.cpp)
+ament_target_dependencies(subscriber_component rclcpp geometry_msgs rclcpp_components)
 
 # Install
 install(TARGETS publisher_component subscriber_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+  RUNTIME DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY include/
   DESTINATION include)

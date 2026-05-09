@@ -2,4 +2,26 @@ FROM ros:humble-ros-base
 
 # TODO
 
+#安装编译环境和依赖
+RUN apt-get update \
+    && apt-get install -y \
+    build-essential \
+    python3-colcon-common-extensions \
+    ros-humble-geometry-msgs \ 
+    ros-humble-rclcpp-components \  
+    && rm -rf /var/lib/apt/lists/*
+#(笔记)通过倒推法，从后续代码中检查需要使用的依赖。基础镜像里有的依赖不需要安装。检查命令：apt-cache search <package_name>（不能在主机上执行，需要在容器里执行）
+#https://packages.ubuntu.com/里搜索包名，查看包的功能和依赖关系
+#命名规则：ros-<distro>-<package_name>，其中distro是ROS2的发行版名称，package_name是ROS2包的名称
+#\是换行符，表示命令继续在下一行执行，增加可读性，前面需有空格。
+
+#设置工作目录
 WORKDIR /workspaces/code
+
+#容器启动时自动加载ROS2环境
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc   
+
+#docker build -t basic-topic-dev -f Dockerfile.dev ..
+#(-t指定镜像名称，-f指定Dockerfile路径，..表示上下文路径，即当前目录的父目录)
+#docker run -it --rm -v ${PWD}:/workspaces/code basic-topic-dev bash
+#(-it交互式终端，--rm容器退出后自动删除，-v挂载当前目录到容器的工作目录，basic-topic-dev指定使用的镜像，bash指定容器启动后执行的命令)
