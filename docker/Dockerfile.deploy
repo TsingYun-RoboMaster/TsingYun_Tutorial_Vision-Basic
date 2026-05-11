@@ -1,3 +1,12 @@
 FROM ros:humble-ros-base
 
-# TODO
+# TODO: 安装编译工具
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspaces/code
+
+# TODO: 复制源码并编译
+COPY basic_ws/src /workspaces/code/src
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"

@@ -22,7 +22,9 @@ namespace basic_topic
         double normalize_angle(double angle);
         void quaternion_to_rpy(const geometry_msgs::msg::Quaternion& q, double& roll, double& pitch, double& yaw);
 
-        // TODO
+        // TODO: 声明订阅者和回调函数
+        rclcpp::Subscription<geometry_msgs::msg::Quaternion>::SharedPtr subscription_;
+        void topic_callback(const geometry_msgs::msg::Quaternion::SharedPtr msg);
     };
 
 }  // namespace basic_topic

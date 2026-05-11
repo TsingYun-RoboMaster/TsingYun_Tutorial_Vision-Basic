@@ -1,5 +1,11 @@
 FROM ros:humble-ros-base
 
-# TODO
+# Install colcon build tool
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
+# Source ROS2 environment on shell startup
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 WORKDIR /workspaces/code
