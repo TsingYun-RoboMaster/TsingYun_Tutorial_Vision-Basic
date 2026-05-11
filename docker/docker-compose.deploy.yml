@@ -7,7 +7,8 @@ services:
     container_name: basic-publisher
     # TODO: 启动发布节点
     command: /bin/bash -c "source /opt/ros/humble/setup.bash && source /workspaces/code/install/setup.bash && exec ./install/basic_topic/lib/basic_topic/publisher_node"
-    network_mode: host
+    networks:
+      - ros-net
     tty: true
 
   subscriber:
@@ -18,5 +19,10 @@ services:
     container_name: basic-subscriber
     # TODO: 启动订阅节点
     command: /bin/bash -c "source /opt/ros/humble/setup.bash && source /workspaces/code/install/setup.bash && exec ./install/basic_topic/lib/basic_topic/subscriber_node"
-    network_mode: host
+    networks:
+      - ros-net
     tty: true
+
+networks:
+  ros-net:
+    driver: bridge
