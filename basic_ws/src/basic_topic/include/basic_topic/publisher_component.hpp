@@ -23,7 +23,11 @@ namespace basic_topic
         double normalize_angle(double angle);
         geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
 
-        // TODO
+        rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr publisher_;
+        rclcpp::TimerBase::SharedPtr timer_;
+        double roll_{0.0};
+        double pitch_{0.0};
+        double yaw_{0.0};
     };
 
 }  // namespace basic_topic

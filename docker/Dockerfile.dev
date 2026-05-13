@@ -1,5 +1,15 @@
 FROM ros:humble-ros-base
 
-# TODO
+RUN apt update && apt install -y \
+    python3-colcon-common-extensions \
+    ros-humble-geometry-msgs \
+    ros-humble-launch-ros \
+    ros-humble-rclcpp \
+    ros-humble-rclcpp-components \
+    ros-humble-tf2 \
+    ros-humble-tf2-geometry-msgs \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN printf '\nsource /opt/ros/humble/setup.bash\nif [ -f /workspaces/code/install/setup.bash ]; then\n  source /workspaces/code/install/setup.bash\nfi\n' >> /root/.bashrc
 
 WORKDIR /workspaces/code
