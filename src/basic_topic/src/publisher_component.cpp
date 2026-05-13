@@ -1,14 +1,18 @@
 #include "basic_topic/publisher_component.hpp"
+#include <cmath>
 
 using namespace std::chrono_literals;
 
 namespace basic_topic
 {
-
     PublisherComponent::PublisherComponent(const rclcpp::NodeOptions& options) :
         Node("publisher_node", options)
     {
-        // TODO
+        // 初始化发布者
+        publisher_ = this->create_publisher<geometry_msgs::msg::Quaternion>("quaternion_topic", 10);
+
+        // 创建定时器
+        timer_ = this->create_wall_timer(500ms, std::bind(&PublisherComponent::timer_callback, this));
     }
 
     double PublisherComponent::normalize_angle(double angle)
@@ -36,8 +40,17 @@ namespace basic_topic
         return q;
     }
 
-    // TODO
+    void PublisherComponent::timer_callback()
+    {
+        // 设置作业要求的欧拉角 (例如 Roll=0, Pitch=0, Yaw=1.0)
+        double r = 0.0, p = 0.0, y = 1.0;
+        auto q_msg = rpy_to_quaternion(r, p, y);
 
-}  // namespace basic_topic
+        RCLCPP_INFO(this->get_logger(), "Publishing RPY: Roll=%.2f, Pitch=%.2f, Yaw=%.2f", r, p, y);
+        publisher_->publish(q_msg);
+    }
 
+}  // namespace basic_topic (确保这行有大括号)
+
+#include "rclcpp_components/register_node_macro.hpp"
 RCLCPP_COMPONENTS_REGISTER_NODE(basic_topic::PublisherComponent)
