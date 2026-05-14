@@ -1,3 +1,14 @@
 FROM ros:humble-ros-base
 
-# TODO
+# Copy the workspace
+COPY basic_ws /basic_ws
+
+# Build the package
+WORKDIR /basic_ws
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build --symlink-install"
+
+# Source the setup
+RUN echo "source /basic_ws/install/setup.bash" >> ~/.bashrc
+
+# Default command
+CMD ["/bin/bash"]

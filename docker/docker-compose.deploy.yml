@@ -1,1 +1,32 @@
-# TODO
+version: "3.8"
+
+services:
+  publisher:
+    image: basic:deploy
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: publisher_container
+    command: /bin/bash -c "source /opt/ros/humble/setup.bash && source /basic_ws/install/setup.bash && ros2 run basic_topic publisher_component"
+    networks:
+      - ros_network
+    environment:
+      - ROS_DOMAIN_ID=0
+
+  subscriber:
+    image: basic:deploy
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: subscriber_container
+    command: /bin/bash -c "source /opt/ros/humble/setup.bash && source /basic_ws/install/setup.bash && ros2 run basic_topic subscriber_component"
+    depends_on:
+      - publisher
+    networks:
+      - ros_network
+    environment:
+      - ROS_DOMAIN_ID=0
+
+networks:
+  ros_network:
+    driver: bridge

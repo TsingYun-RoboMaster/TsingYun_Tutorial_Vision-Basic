@@ -2,7 +2,6 @@
 #define BASIC_TOPIC__PUBLISHER_COMPONENT_HPP_
 
 #include "rclcpp/rclcpp.hpp"
-#include "rclcpp_components/register_node_macro.hpp"
 #include "geometry_msgs/msg/quaternion.hpp"
 
 #include <chrono>
@@ -24,6 +23,14 @@ namespace basic_topic
         geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
 
         // TODO
+        void timer_callback();
+        rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr publisher_;
+        rclcpp::TimerBase::SharedPtr timer_;
+
+        double roll_;
+        double pitch_;
+        double yaw_;
+
     };
 
 }  // namespace basic_topic
