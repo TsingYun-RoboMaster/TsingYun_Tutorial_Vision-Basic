@@ -1,3 +1,15 @@
-FROM ros:humble-ros-base
+﻿FROM ros:humble-ros-base
 
-# TODO
+ARG DEBIAN_FRONTEND=noninteractive
+ARG ROS_DISTRO=humble
+ENV ROS_DISTRO=${ROS_DISTRO}
+RUN apt-get update && \
+    apt-get install -y python3-colcon-common-extensions ros-humble-rmw-cyclonedds-cpp && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+COPY basic_ws /workspace/basic_ws
+
+RUN /bin/bash -lc "source /opt/ros/${ROS_DISTRO}/setup.bash && cd /workspace/basic_ws && colcon build --symlink-install"
+
+CMD ["/bin/bash"]

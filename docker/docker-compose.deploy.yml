@@ -1,1 +1,50 @@
-# TODO
+﻿services:
+  publisher:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    image: basic_topic:deploy
+    container_name: basic-topic-publisher
+    command: /bin/bash -lc "source /opt/ros/$$ROS_DISTRO/setup.bash && source /workspace/basic_ws/install/setup.bash && ros2 run basic_topic publisher_component"
+    environment:
+      ROS_DISTRO: humble
+      ROS_DOMAIN_ID: "0"
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+      CYCLONEDDS_URI: |
+        <CycloneDDS>
+          <Domain>
+            <Discovery>
+              <Peers>
+                <Peer address="subscriber:7447"/>
+              </Peers>
+            </Discovery>
+          </Domain>
+        </CycloneDDS>
+    depends_on:
+      - subscriber
+
+  subscriber:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    image: basic_topic:deploy
+    container_name: basic-topic-subscriber
+    command: /bin/bash -lc "source /opt/ros/$$ROS_DISTRO/setup.bash && source /workspace/basic_ws/install/setup.bash && ros2 run basic_topic subscriber_component"
+    environment:
+      ROS_DISTRO: humble
+      ROS_DOMAIN_ID: "0"
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+      CYCLONEDDS_URI: |
+        <CycloneDDS>
+          <Domain>
+            <Discovery>
+              <Peers>
+                <Peer address="publisher:7447"/>
+              </Peers>
+            </Discovery>
+          </Domain>
+        </CycloneDDS>
+
+networks:
+  default:
+    driver: bridge
