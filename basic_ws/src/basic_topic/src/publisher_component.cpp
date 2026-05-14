@@ -9,6 +9,8 @@ namespace basic_topic
         Node("publisher_node", options)
     {
         // TODO
+        jijiji
+        7897
     }
 
     double PublisherComponent::normalize_angle(double angle)
