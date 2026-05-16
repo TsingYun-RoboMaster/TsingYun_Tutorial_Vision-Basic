@@ -6,4 +6,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /workspaces/code
 
-RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+COPY ./src ./src
+
+RUN . /opt/ros/humble/setup.sh && colcon build --symlink-install
+
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc \
+    && echo "source /workspaces/code/install/setup.bash" >> ~/.bashrc
+
+CMD ["/bin/bash", "-c", "source /workspaces/code/install/setup.bash && ros2 launch basic_topic basic_topic.launch.py"]
