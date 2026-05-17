@@ -1,3 +1,39 @@
+# ============================================================
+# Dockerfile.deploy — 部署用镜像
+# 用途：将 basic_topic 包编译进镜像，供 docker-compose 部署
+# ============================================================
+
 FROM ros:humble-ros-base
 
-# TODO
+# 防止 apt 安装时弹出交互界面
+ENV DEBIAN_FRONTEND=noninteractive
+
+# ---- 第1层：安装编译工具 ----
+# colcon 是 ROS2 的编译工具，编译源码需要它
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---- 第2层：设置 ROS2 通信环境变量（必须在编译前就设好） ----
+# RMW_IMPLEMENTATION：ROS2 的底层通信中间件。
+#   ros:humble 基础镜像自带 rmw_fastrtps_cpp，无需额外安装。
+#   如果不指定，镜像默认用 rmw_cyclonedds_cpp，但那个库没有被安装！
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+# ROS_LOCALHOST_ONLY=1：让 DDS 只监听 127.0.0.1（本机回环）。
+#   在 host 网络模式下，所有容器共享宿主机的 127.0.0.1，
+#   因此设为 1 可以确保 DDS 发现和通信只通过本机回环接口，
+#   避免了物理网卡防火墙或 Docker 网络策略的干扰。
+ENV ROS_LOCALHOST_ONLY=1
+
+# ---- 第3层：复制源码并编译 ----
+# 注意：docker-compose 的 build context 是项目根目录
+# 所以 COPY basic_ws 会把项目根目录下的 basic_ws/ 整个复制进来
+WORKDIR /ws
+COPY basic_ws /ws/basic_ws
+
+# 编译：colcon build 会在 /ws 下生成 install/build/log 目录
+RUN . /opt/ros/humble/setup.sh && \
+    colcon build --symlink-install
+
+# ---- 第4层：确认工作目录 ----
+WORKDIR /ws/basic_ws

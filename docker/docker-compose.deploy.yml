@@ -1,1 +1,44 @@
-# TODO
+# ============================================================
+# docker-compose.deploy.yml — 部署模式
+# 用途：让发布者和订阅者分别运行在两个容器中，实现跨容器通信
+# ============================================================
+
+services:
+
+  # ---------- 发布者容器 ----------
+  publisher:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic_topic_pub
+    environment:
+      - ROS_LOCALHOST_ONLY=0
+    command: |
+      bash -c "
+        . /opt/ros/humble/setup.sh &&
+        . /ws/install/setup.sh &&
+        ros2 run basic_topic publisher_node
+      "
+    networks:
+      - basic_topic_net
+
+  # ---------- 订阅者容器 ----------
+  subscriber:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic_topic_sub
+    environment:
+      - ROS_LOCALHOST_ONLY=0
+    command: |
+      bash -c "
+        . /opt/ros/humble/setup.sh &&
+        . /ws/install/setup.sh &&
+        ros2 run basic_topic subscriber_node
+      "
+    networks:
+      - basic_topic_net
+
+networks:
+  basic_topic_net:
+    driver: bridge
