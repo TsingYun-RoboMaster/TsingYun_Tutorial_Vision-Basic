@@ -1,1 +1,26 @@
-# TODO
+version: "3.8"
+
+services:
+  publisher:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic-publisher
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /workspaces/code/install/setup.bash && ros2 run basic_topic publisher_node"
+    restart: unless-stopped
+    networks:
+      - rosnet
+
+  subscriber:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic-subscriber
+    command: bash -lc "source /opt/ros/humble/setup.bash && source /workspaces/code/install/setup.bash && ros2 run basic_topic subscriber_node"
+    restart: unless-stopped
+    networks:
+      - rosnet
+
+networks:
+  rosnet:
+    driver: bridge

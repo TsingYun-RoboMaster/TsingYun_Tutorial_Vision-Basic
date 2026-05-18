@@ -9,6 +9,25 @@ namespace basic_topic
         Node("publisher_node", options)
     {
         // TODO
+        publisher_ = this->create_publisher<geometry_msgs::msg::Quaternion>("/tf_quaternion", 10);
+
+        timer_ = this->create_wall_timer(100ms, std::bind(&PublisherComponent::timer_callback, this));
+
+        RCLCPP_INFO(this->get_logger(), "Publisher node started");
+    }
+
+    void PublisherComponent::timer_callback()
+    {
+        double time = this->now().seconds();
+        double roll = 0.0;
+        double pitch = 0.0;
+        double yaw = time * 0.5; 
+
+        auto q_msg = rpy_to_quaternion(roll, pitch, yaw);
+
+        publisher_->publish(q_msg);
+
+        RCLCPP_INFO(this->get_logger(), "Published RPY: [%.2f, %.2f, %.2f] rad", roll, pitch, yaw);
     }
 
     double PublisherComponent::normalize_angle(double angle)

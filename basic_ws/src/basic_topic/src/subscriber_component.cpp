@@ -7,6 +7,25 @@ namespace basic_topic
         Node("subscriber_node", options)
     {
         // TODO
+        subscriber_ = this->create_subscription<geometry_msgs::msg::Quaternion>(
+            "/tf_quaternion",
+            10,
+            std::bind(&SubscriberComponent::topic_callback, this, std::placeholders::_1)
+        );
+
+        RCLCPP_INFO(this->get_logger(), "Subscriber node started");
+    }
+
+    void SubscriberComponent::topic_callback(const geometry_msgs::msg::Quaternion::SharedPtr msg)
+    {
+        double roll, pitch, yaw;
+        quaternion_to_rpy(*msg, roll, pitch, yaw);
+        roll = normalize_angle(roll);
+        pitch = normalize_angle(pitch);
+        yaw = normalize_angle(yaw);
+
+        RCLCPP_INFO(this->get_logger(), "Received Quaternion: [w=%.6f, x=%.6f, y=%.6f, z=%.6f]", msg->w, msg->x, msg->y, msg->z);
+        RCLCPP_INFO(this->get_logger(), "Received RPY: [%.2f, %.2f, %.2f] rad", roll, pitch, yaw);
     }
 
     double SubscriberComponent::normalize_angle(double angle)

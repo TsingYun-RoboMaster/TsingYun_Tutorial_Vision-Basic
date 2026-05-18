@@ -23,6 +23,8 @@ namespace basic_topic
         void quaternion_to_rpy(const geometry_msgs::msg::Quaternion& q, double& roll, double& pitch, double& yaw);
 
         // TODO
+        rclcpp::Subscription<geometry_msgs::msg::Quaternion>::SharedPtr subscriber_;
+        void topic_callback(const geometry_msgs::msg::Quaternion::SharedPtr msg);
     };
 
 }  // namespace basic_topic
