@@ -24,6 +24,19 @@ namespace basic_topic
         geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
 
         // TODO
+        // 1. 声明一个发布者，发布的数据类型是 geometry_msgs::msg::Quaternion
+        rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr publisher_;
+
+        // 2. 声明一个定时器，用来规律地触发发布动作
+        rclcpp::TimerBase::SharedPtr timer_;
+
+        // 3. 声明三个变量，用来记录和递增当前的 Roll, Pitch, Yaw 角度
+        double roll_ = 0.0;
+        double pitch_ = 0.0;
+        double yaw_ = 0.0;
+
+        // 4. 定时器绑定的回调函数，每次时间到了就会执行它
+        void timer_callback();
     };
 
 }  // namespace basic_topic

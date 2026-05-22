@@ -1,3 +1,24 @@
+# 1. 基础镜像：官方原生
 FROM ros:humble-ros-base
 
-# TODO
+#TODO
+# 2. 对齐在 Linux 容器下习惯的工作空间路径
+WORKDIR /root/engineer_ws
+
+# 3. 安装部署静态编译所需的官方依赖扩展工具
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
+# ==== 【消除相对路径歧义】 ====
+# 将项目中的 basic_ws 内容复制到容器工作空间根目录
+COPY ./basic_ws/ .
+
+# 4. 前置引入官方环境，进行正式编译
+RUN . /opt/ros/humble/setup.sh && colcon build --symlink-install
+
+# 5. 自动 source 官方环境和我们刚刚在工作空间编译出来的环境
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc \
+    && echo "source /root/engineer_ws/install/setup.bash" >> ~/.bashrc
+
+CMD ["bash"]

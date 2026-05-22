@@ -22,7 +22,12 @@ namespace basic_topic
         double normalize_angle(double angle);
         void quaternion_to_rpy(const geometry_msgs::msg::Quaternion& q, double& roll, double& pitch, double& yaw);
 
-        // TODO
+        // TODO 
+        // 1. 声明一个 ROS 2 订阅者，用于接收 geometry_msgs::msg::Quaternion 类型的消息
+        rclcpp::Subscription<geometry_msgs::msg::Quaternion>::SharedPtr subscription_;
+
+        // 2. 声明接收消息时触发的回调函数
+        void topic_callback(const geometry_msgs::msg::Quaternion::SharedPtr msg);
     };
 
 }  // namespace basic_topic

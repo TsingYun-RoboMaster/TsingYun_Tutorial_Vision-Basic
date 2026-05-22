@@ -1,1 +1,32 @@
-# TODO
+services:
+  # ----------------------------------------------------
+  # 服务一：独立运行的 ROS 2 发布者容器
+  # ----------------------------------------------------
+  publisher_container:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: deploy_publisher_node
+    network_mode: "host"
+    ipc: "host"
+    restart: always
+    command: >
+      bash -c "source /opt/ros/humble/setup.bash && 
+               source /root/engineer_ws/install/setup.bash && 
+               ros2 run basic_topic publisher_node"
+
+  # ----------------------------------------------------
+  # 服务二：独立运行的 ROS 2 订阅者容器
+  # ----------------------------------------------------
+  subscriber_container:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: deploy_subscriber_node
+    network_mode: "host"
+    ipc: "host"
+    restart: always
+    command: >
+      bash -c "source /opt/ros/humble/setup.bash && 
+               source /root/engineer_ws/install/setup.bash && 
+               ros2 run basic_topic subscriber_node"
