@@ -22,10 +22,22 @@ namespace basic_topic
         static constexpr double kPi = 3.14159265358979323846;
         double normalize_angle(double angle);
         geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
+// 声明 ROS 2 发布者智能指针
+        rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr publisher_;
+        
+        // 声明硬件定时器智能指针
+        rclcpp::TimerBase::SharedPtr timer_;
+        
+        // 声明定时器触发时的回调函数
+        void timer_callback();
 
-        // TODO
+        // 声明并初始化用于存储欧拉角状态的成员变量
+        double roll_{0.0};
+        double pitch_{0.0};
+        double yaw_{0.0};
     };
 
 }  // namespace basic_topic
+
 
 #endif  // BASIC_TOPIC__PUBLISHER_COMPONENT_HPP_

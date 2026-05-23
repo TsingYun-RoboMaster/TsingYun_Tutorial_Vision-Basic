@@ -1,1 +1,18 @@
-# TODO
+version: "3.8"
+
+services:
+  publisher_service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic-deploy-pub
+    command: /bin/bash -c "source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 run basic_topic publisher_component"
+    tty: true
+
+  subscriber_service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic-deploy-sub
+    command: /bin/bash -c "source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 run basic_topic subscriber_component"
+    tty: true

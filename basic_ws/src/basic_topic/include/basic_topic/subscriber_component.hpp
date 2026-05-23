@@ -21,8 +21,11 @@ namespace basic_topic
         static constexpr double kPi = 3.14159265358979323846;
         double normalize_angle(double angle);
         void quaternion_to_rpy(const geometry_msgs::msg::Quaternion& q, double& roll, double& pitch, double& yaw);
-
-        // TODO
+// 声明 ROS 2 订阅者智能指针
+        rclcpp::Subscription<geometry_msgs::msg::Quaternion>::SharedPtr subscription_;
+        
+        // 声明接收到消息时触发的回调函数，参数类型必须与发布的话题类型严格对应
+        void topic_callback(const geometry_msgs::msg::Quaternion::SharedPtr msg);
     };
 
 }  // namespace basic_topic

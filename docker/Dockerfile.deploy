@@ -1,3 +1,17 @@
+# 1. 指定底层操作系统镜像（包含预装的 ROS 2 核心通信库）
 FROM ros:humble-ros-base
 
-# TODO
+# 2. 调用 Linux 包管理器 (apt) 安装 C++ 编译工具链 (build-essential) 和 ROS 构建工具 (colcon)
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# 3. 在系统内存中划分工作目录
+WORKDIR /workspaces/code
+
+# 4. 将宿主机（你 Windows 电脑上）的源码文件，完整拷贝到上述的工作目录中
+COPY . .
+
+# 5. 执行自动编译逻辑：读取环境变量并调用 colcon 链接二进制可执行文件
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"

@@ -1,5 +1,12 @@
 FROM ros:humble-ros-base
 
-# TODO
+# 安装编译 ROS2 包所需的工具 (colcon 和基础编译工具)
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置每次进入容器时，自动加载 ROS2 的环境变量
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 WORKDIR /workspaces/code
