@@ -1,25 +1,25 @@
 cmake_minimum_required(VERSION 3.8)
 project(basic_topic)
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 
-# TODO
+# 定义发布者可执行程序
+add_executable(basic_topic_publisher src/publisher_component.cpp)
+ament_target_dependencies(basic_topic_publisher rclcpp std_msgs)
 
-# Install
-install(TARGETS publisher_component subscriber_component
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+# 定义订阅者可执行程序
+add_executable(basic_topic_subscriber src/subscriber_component.cpp)
+ament_target_dependencies(basic_topic_subscriber rclcpp std_msgs)
 
-install(DIRECTORY include/
-  DESTINATION include)
-
-install(DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME})
+install(TARGETS
+  basic_topic_publisher
+  basic_topic_subscriber
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

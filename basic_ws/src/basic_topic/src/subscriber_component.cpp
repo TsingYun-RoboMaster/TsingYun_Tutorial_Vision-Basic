@@ -1,41 +1,22 @@
-#include "basic_topic/subscriber_component.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
 
-namespace basic_topic
-{
+class SubscriberNode : public rclcpp::Node {
+public:
+  SubscriberNode() : Node("subscriber_node") {
+    subscription_ = this->create_subscription<std_msgs::msg::String>(
+      "chat_topic", 10, std::bind(&SubscriberNode::topic_callback, this, std::placeholders::_1));
+  }
+private:
+  void topic_callback(const std_msgs::msg::String::SharedPtr msg) const {
+    RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg->data.c_str());
+  }
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
+};
 
-    SubscriberComponent::SubscriberComponent(const rclcpp::NodeOptions& options) :
-        Node("subscriber_node", options)
-    {
-        // TODO
-    }
-
-    double SubscriberComponent::normalize_angle(double angle)
-    {
-        angle = std::fmod(angle + kPi, 2.0 * kPi);
-        if (angle < 0.0)
-            angle += 2.0 * kPi;
-        return angle - kPi;
-    }
-
-    void SubscriberComponent::quaternion_to_rpy(const geometry_msgs::msg::Quaternion& q, double& roll, double& pitch, double& yaw)
-    {
-        const double sinr_cosp = 2.0 * (q.w * q.x + q.y * q.z);
-        const double cosr_cosp = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
-        roll = std::atan2(sinr_cosp, cosr_cosp);
-
-        const double sinp = 2.0 * (q.w * q.y - q.z * q.x);
-        if (std::abs(sinp) >= 1.0)
-            pitch = std::copysign(kPi / 2.0, sinp);
-        else
-            pitch = std::asin(sinp);
-
-        const double siny_cosp = 2.0 * (q.w * q.z + q.x * q.y);
-        const double cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
-        yaw = std::atan2(siny_cosp, cosy_cosp);
-    }
-
-    // TODO
-
-}  // namespace basic_topic
-
-RCLCPP_COMPONENTS_REGISTER_NODE(basic_topic::SubscriberComponent)
+int main(int argc, char * argv[]) {
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<SubscriberNode>());
+  rclcpp::shutdown();
+  return 0;
+}
