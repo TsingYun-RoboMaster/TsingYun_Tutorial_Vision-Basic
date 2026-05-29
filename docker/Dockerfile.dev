@@ -1,5 +1,9 @@
 FROM ros:humble-ros-base
 
-# TODO
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-colcon-common-extensions \
+    ros-humble-rclcpp-components \
+    ros-humble-geometry-msgs \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspaces/code
