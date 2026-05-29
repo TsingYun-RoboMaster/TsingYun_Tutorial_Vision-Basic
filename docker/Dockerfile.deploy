@@ -1,3 +1,18 @@
 FROM ros:humble-ros-base
 
-# TODO
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-colcon-common-extensions \
+    ros-humble-rclcpp-components \
+    ros-humble-geometry-msgs \
+    ros-humble-rmw-cyclonedds-cpp \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /workspaces/code
+
+COPY basic_ws /workspaces/code
+
+RUN source /opt/ros/humble/setup.bash && colcon build --symlink-install
