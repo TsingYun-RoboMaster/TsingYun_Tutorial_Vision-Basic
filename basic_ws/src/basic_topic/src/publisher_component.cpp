@@ -1,5 +1,7 @@
 #include "basic_topic/publisher_component.hpp"
 
+#include <functional>
+
 using namespace std::chrono_literals;
 
 namespace basic_topic
@@ -8,7 +10,9 @@ namespace basic_topic
     PublisherComponent::PublisherComponent(const rclcpp::NodeOptions& options) :
         Node("publisher_node", options)
     {
-        // TODO
+        publisher_ = create_publisher<geometry_msgs::msg::Quaternion>("quaternion_topic", 10);
+        start_time_ = now();
+        timer_ = create_wall_timer(1s, std::bind(&PublisherComponent::timer_callback, this));
     }
 
     double PublisherComponent::normalize_angle(double angle)
@@ -36,7 +40,27 @@ namespace basic_topic
         return q;
     }
 
-    // TODO
+    void PublisherComponent::timer_callback()
+    {
+        const double elapsed = (now() - start_time_).seconds();
+        const double roll = normalize_angle(elapsed * 0.1);
+        const double pitch = normalize_angle(elapsed * 0.15);
+        const double yaw = normalize_angle(elapsed * 0.2);
+
+        const auto quaternion = rpy_to_quaternion(roll, pitch, yaw);
+        publisher_->publish(quaternion);
+
+        RCLCPP_INFO(
+            get_logger(),
+            "Published Quaternion [x: %.4f, y: %.4f, z: %.4f, w: %.4f] | Roll: %.4f, Pitch: %.4f, Yaw: %.4f",
+            quaternion.x,
+            quaternion.y,
+            quaternion.z,
+            quaternion.w,
+            roll,
+            pitch,
+            yaw);
+    }
 
 }  // namespace basic_topic
 
