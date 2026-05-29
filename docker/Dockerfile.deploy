@@ -1,3 +1,24 @@
 FROM ros:humble-ros-base
 
-# TODO
+# 安装编译所需的依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        python3-colcon-common-extensions \
+        ros-humble-geometry-msgs \
+        ros-humble-rclcpp-components \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspaces/code
+
+# 拷贝工作空间源码并在镜像中完成编译
+COPY basic_ws/ /workspaces/code/
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    colcon build --symlink-install
+
+# 入口脚本：source 环境后执行传入的命令
+COPY docker/ros_entrypoint.sh /ros_entrypoint.sh
+RUN chmod +x /ros_entrypoint.sh
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]

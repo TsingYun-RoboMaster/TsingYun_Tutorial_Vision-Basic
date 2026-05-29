@@ -1,1 +1,37 @@
-# TODO
+version: "3.8"
+
+# 发布节点与订阅节点分别运行在两个容器中，
+# 通过共享的 bridge 网络与相同的 ROS_DOMAIN_ID 实现 DDS 自动发现与通信。
+services:
+  publisher:
+    image: basic:deploy
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic-publisher
+    environment:
+      - ROS_DOMAIN_ID=42
+    networks:
+      - ros_net
+    command: ["ros2", "run", "basic_topic", "publisher_node"]
+    restart: unless-stopped
+
+  subscriber:
+    image: basic:deploy
+    # 复用 publisher 已构建的镜像，无需重复 build
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    container_name: basic-subscriber
+    depends_on:
+      - publisher
+    environment:
+      - ROS_DOMAIN_ID=42
+    networks:
+      - ros_net
+    command: ["ros2", "run", "basic_topic", "subscriber_node"]
+    restart: unless-stopped
+
+networks:
+  ros_net:
+    driver: bridge

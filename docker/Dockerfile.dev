@@ -1,5 +1,17 @@
 FROM ros:humble-ros-base
 
-# TODO
+# 安装开发与编译所需的工具
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
+        python3-colcon-common-extensions \
+        ros-humble-geometry-msgs \
+        ros-humble-rclcpp-components \
+    && rm -rf /var/lib/apt/lists/*
+
+# 每次进入容器自动 source ROS2 环境，方便开发
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /root/.bashrc && \
+    echo "if [ -f /workspaces/code/install/setup.bash ]; then source /workspaces/code/install/setup.bash; fi" >> /root/.bashrc
 
 WORKDIR /workspaces/code

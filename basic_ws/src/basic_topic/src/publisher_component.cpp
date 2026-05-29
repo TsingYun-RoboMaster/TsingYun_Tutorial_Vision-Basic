@@ -8,7 +8,13 @@ namespace basic_topic
     PublisherComponent::PublisherComponent(const rclcpp::NodeOptions& options) :
         Node("publisher_node", options)
     {
-        // TODO
+        // 创建发布者，话题名为 "quaternion"，队列深度 10
+        publisher_ = this->create_publisher<geometry_msgs::msg::Quaternion>("quaternion", 10);
+
+        // 创建 500ms 周期的定时器，周期性发布四元数消息
+        timer_ = this->create_wall_timer(500ms, std::bind(&PublisherComponent::timer_callback, this));
+
+        RCLCPP_INFO(this->get_logger(), "Publisher node has been started.");
     }
 
     double PublisherComponent::normalize_angle(double angle)
@@ -36,7 +42,28 @@ namespace basic_topic
         return q;
     }
 
-    // TODO
+    void PublisherComponent::timer_callback()
+    {
+        // 生成 RPY。注意 quaternion_to_rpy 还原出的 pitch 只落在 [-pi/2, pi/2]，
+        // 为保证四元数能被订阅端无歧义地还原（从而满足"两端相差 pi 整数倍"的要求），
+        // 这里把 pitch 限制在 (-pi/2, pi/2)，roll、yaw 限制在 (-pi, pi)。
+        const double roll = normalize_angle(roll_);
+        const double pitch = 0.5 * normalize_angle(pitch_);  // 落在 (-pi/2, pi/2)
+        const double yaw = normalize_angle(yaw_);
+
+        // 转换为四元数并发布
+        const geometry_msgs::msg::Quaternion msg = rpy_to_quaternion(roll, pitch, yaw);
+        publisher_->publish(msg);
+
+        // 在终端打印发布的 RPY 值
+        RCLCPP_INFO(this->get_logger(),
+                    "Publish  -> RPY: roll=%.4f, pitch=%.4f, yaw=%.4f", roll, pitch, yaw);
+
+        // 更新 RPY，让下一次发布的内容发生变化
+        roll_ += 0.1;
+        pitch_ += 0.2;
+        yaw_ += 0.3;
+    }
 
 }  // namespace basic_topic
 
