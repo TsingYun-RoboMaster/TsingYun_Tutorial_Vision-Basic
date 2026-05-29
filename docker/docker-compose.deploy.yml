@@ -1,1 +1,17 @@
 # TODO
+services:
+  publisher:
+    build:
+      context: .. 
+      dockerfile: docker/Dockerfile.deploy
+    command: /bin/bash -c "source /opt/ros/humble/setup.bash && source /ros2_ws/install/setup.bash && ros2 run basic_topic publisher_node"
+    # Docker 默认会让在同一个 compose 文件下的容器处于同一个局域网，
+    # ROS2 的 FastDDS 会利用 UDP 多播在这个局域网内自动发现彼此。
+
+  subscriber:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.deploy
+    command: /bin/bash -c "source /opt/ros/humble/setup.bash && source /ros2_ws/install/setup.bash && ros2 run basic_topic subscriber_node"
+    depends_on:
+      - publisher

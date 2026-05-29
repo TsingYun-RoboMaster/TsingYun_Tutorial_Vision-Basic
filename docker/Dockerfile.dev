@@ -1,5 +1,16 @@
 FROM ros:humble-ros-base
 
 # TODO
+# 更新软件源并安装 colcon 编译工具
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /workspaces/code
+# 设置容器内的标准工作目录
+WORKDIR /ros2_ws
+
+# 每次进入终端时，自动激活 ROS2 基础环境
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+
+# 默认启动 bash 终端
+CMD ["bash"]

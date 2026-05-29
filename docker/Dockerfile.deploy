@@ -1,3 +1,19 @@
 FROM ros:humble-ros-base
 
 # TODO
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
+# 设置标准工作目录
+WORKDIR /ros2_ws
+
+# 将本地代码拷贝进容器的 src 目录下
+COPY ./basic_ws /ros2_ws/
+
+# 编译整个工作空间
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
+
+# 自动配置环境变量
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+RUN echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc

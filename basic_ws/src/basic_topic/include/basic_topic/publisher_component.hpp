@@ -24,6 +24,13 @@ namespace basic_topic
         geometry_msgs::msg::Quaternion rpy_to_quaternion(double roll, double pitch, double yaw);
 
         // TODO
+        rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr publisher_;
+        
+        // 声明定时器指针
+        rclcpp::TimerBase::SharedPtr timer_;
+        
+        // 声明定时器触发时要调用的回调函数
+        void timer_callback();
     };
 
 }  // namespace basic_topic

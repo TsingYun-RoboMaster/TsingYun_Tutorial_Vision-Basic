@@ -23,6 +23,10 @@ namespace basic_topic
         void quaternion_to_rpy(const geometry_msgs::msg::Quaternion& q, double& roll, double& pitch, double& yaw);
 
         // TODO
+        rclcpp::Subscription<geometry_msgs::msg::Quaternion>::SharedPtr subscription_;
+        
+        // 声明回调函数，参数是接收到的四元数消息的常量共享指针
+        void topic_callback(const geometry_msgs::msg::Quaternion::SharedPtr msg);
     };
 
 }  // namespace basic_topic
