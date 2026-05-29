@@ -1,5 +1,17 @@
 FROM ros:humble-ros-base
 
 # TODO
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    build-essential \
+    cmake \
+    git \
+    vim \
+    nano \
+    && rm -rf /var/lib/apt/lists/*
+
+SHELL ["/bin/bash", "-c"]
+
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 WORKDIR /workspaces/code

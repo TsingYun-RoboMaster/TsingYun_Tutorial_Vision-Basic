@@ -1,3 +1,20 @@
 FROM ros:humble-ros-base
 
 # TODO
+RUN apt-get update && apt-get install -y \
+    python3-colcon-common-extensions \
+    build-essential \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /workspaces/code
+
+COPY basic_ws /workspaces/code
+
+RUN source /opt/ros/humble/setup.bash && \
+    colcon build --symlink-install
+
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc && \
+    echo "source /workspaces/code/install/setup.bash" >> ~/.bashrc
